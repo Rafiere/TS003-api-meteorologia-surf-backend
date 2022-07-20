@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "moduleResolution": "Node", //Utilizaremos o ambiente NodeJS.
+    "module": "CommonJS",
+    "lib": [
+      "es2019" //Os tipos do ECMAScript 2019 estarão com a biblioteca incluída.
+    ],
+    "sourceMap": true, //Ao realizarmos a compilação, os tipos serão exibidos durante o debug. Isso facilita muito o debug.
+    "outDir": "dist", //É o diretório onde o código compilado será inserido.
+    "strict": true,
+    "noImplicitAny": true, //Quando não inferimos um tipo, por padrão, esse tipo seria "any", porém, com essa opção, isso não acontecerá.
+    "strictNullChecks": true, //Não podemos definir algo com "null" ou "undefined".
+    "noImplicitThis": true,
+    "resolveJsonModule": true,
+    "noImplicitReturns": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".", //O root do projeto. Ele será a pasta em que esse arquivo está inserido atualmente.
+    "paths": { //Podemos importar tudo o que está em "./src/" apenas utilizando o "@src". Isso diminui o tamanho dos imports.
+      "@src/*": [
+        "./src/*"
+      ],
+      "@test/*": [
+        "./test/*"
+      ]
+    },
+    "rootDirs": [
+      "./src",
+      "./test"
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./test/**/*.ts"
+  ],
+  "exclude": [
+    "./node_modules/*",
+    "dist"
+  ]
+}
