@@ -1,4 +1,5 @@
-import { AxiosStatic } from "axios";
+import {AxiosError, AxiosStatic } from "axios";
+import {InternalError} from "@src/util/errors/internal-error";
 
 /**
  * Os "clients" serão responsáveis por realizar a comunicação com
@@ -44,6 +45,32 @@ export interface ForecastPoint {
     windSpeed: number;
 }
 
+/**
+ * Esse erro representará todos os erros que são do client, ou seja, que
+ * porem ocorrer dentro de nosso cliente ao realizarmos a requisição.
+ */
+
+export class ClientRequestError extends InternalError {
+    constructor(message: string){
+        const internalMessage = `Unexpected error when trying to communicate to StormGlass`; //Não precisamos tipar as constantes pois o TypeScript consegue, facilmente, inferir o tipo.
+        super(`${internalMessage}: ${message}`); //Vamos enviar a mensagem interna do erro e concatenarmos com a resposta que o usuário enviar.
+    }
+}
+
+/**
+ * Esse erro representará todos os erros que possam ocorrer na API que estamos
+ * consumindo, como, por exemplo, ao chegarmos no limite máximo de requisições
+ * diárias.
+ */
+
+export class StormGlassResponseError extends InternalError {
+    constructor(message: string) {
+        const internalMessage =
+            'Unexpected error returned by the StormGlass service';
+        super(`${internalMessage}: ${message}`);
+    }
+}
+
 export class StormGlass {
 
     readonly stormGlassAPIParameters = //Esses são os parâmetros que serão enviados na requisição para que a API possa retorná-los.
@@ -54,17 +81,32 @@ export class StormGlass {
     constructor(protected request: AxiosStatic) { //O Axios será utilizado para realizarmos requisições para API externas.
     }
 
-    public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]>{
+    public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
+        try {
+            const response = await this.request.get<StormGlassForecastResponse>(
+                `https://api.stormglass.io/v2/weather/point?lat=${lat}&lng=${lng}&params=${this.stormGlassAPIParameters}&source=${this.stormGlassAPISource}`,
+                {
+                    headers: {
+                        Authorization: 'fake-token'
+                    },
+                });
 
-        const response = await this.request.get<StormGlassForecastResponse>(
-            `https://api.stormglass.io/v2/weather/point?lat=${lat}&lng=${lng}&params=${this.stormGlassAPIParameters}&source=${this.stormGlassAPISource}`,
-            {
-                headers: {
-                    Authorization: 'fake-token'
-                },
-            });
+            return this.normalizeResponse(response.data);
 
-        return this.normalizeResponse(response.data);
+        } catch (err: unknown) { //O TypeScript não permite que um erro seja tipado, assim, podemos receber vários tipos de erros. O máximo que conseguimos fazer é verificar se um erro é de um determinado tipo, e se for, executar uma determinada ação.
+            const axiosError = err as AxiosError;
+            if (
+                axiosError.response &&
+                axiosError.response.status
+            ) {
+                throw new StormGlassResponseError(
+                    `Error: ${JSON.stringify(axiosError.response.data)} Code: ${
+                        axiosError.response.status
+                    }`
+                );
+            }
+            throw new ClientRequestError((err as { message: any }).message);
+        }
     }
 
     /**
