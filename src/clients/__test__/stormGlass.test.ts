@@ -2,6 +2,7 @@ import { StormGlass } from '@src/clients/stormGlass';
 import axios from 'axios';
 import stormGlassWeather3HoursFixture from '@test/fixtures/stormglass_weather_3_hours.json';
 import stormGlassNormalized3HoursFixture from '@test/fixtures/stormglass_normalized_response_3_hours.json';
+import mock = jest.mock;
 
 jest.mock('axios');
 
@@ -55,5 +56,53 @@ describe('Storm Glass client', () => {
         const response = await stormGlass.fetchPoints(lat, lng);
 
         expect(response).toEqual([]);
+    });
+
+    /**
+     * Esse teste verificará se um erro genérico será lançado caso a request que
+     * enviaremos esteja incompleta. Essa verificação na requisição será
+     * realizada antes da requisição chegar ao serviço externo.
+     */
+
+    it('deve obter um erro genérico do serviço do StormGlass quando a requisição falhar antes de alcançar o serviço', async () => {
+
+        const lat = -33.792726;
+        const lng = 151.289824;
+
+        mockedAxios.get.mockRejectedValue({ message: 'Network Error' }); //Nesse caso de teste, o "get()" vai rejeitar a promise, ou seja, a requisição, com a mensagem "Network Error". Essa mensagem será enviada caso a nossa requisição tenha algum erro.
+
+        const stormGlass = new StormGlass(mockedAxios);
+
+        // const response = await stormGlass.fetchPoints(lat, lng);
+
+        // await expect(response).rejects.toThrow( //Um "reject" será enviado quando a promise for rejeitada, ou seja, quando o serviço não enviar uma resposta para a requisição. Antes de chegarmos ao serviço.
+        //     'Unexpected error when trying to communicate to StormGlass: Network Error'
+        // )
+
+        await expect(stormGlass.fetchPoints(lat, lng)).rejects.toThrow(
+            'Unexpected error when trying to communicate to StormGlass: Network Error'
+        );
+    });
+
+    it('deve retornar um "StormGlassResponseError" quando o serviço do StormGlass retorna algum erro. ', async () => {
+
+        const lat = -33.792726;
+        const lng = 151.289824;
+
+        mockedAxios.get.mockRejectedValue({
+            response: {
+                status: 429,
+                data: {
+                    errors: ['Rate Limit reached']
+                },
+            },
+        })
+
+        const stormGlass = new StormGlass(mockedAxios);
+
+        await expect(stormGlass.fetchPoints(lat, lng)).rejects.toThrow(
+            'Unexpected error returned by the StormGlass service: Error: {"errors":["Rate Limit reached"]} Code: 429'
+        );
+
     });
 })
