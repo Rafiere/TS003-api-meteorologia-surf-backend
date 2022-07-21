@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1f891364-3c26-4228-b426-a595cbd23fd3" name="Changes" comment="feat: alteração do local em que o &quot;.gitignore&quot; está localizado no projeto." />
+    <list default="true" id="1f891364-3c26-4228-b426-a595cbd23fd3" name="Changes" comment="feat: inserindo JSON que será utilizado como mock para trabalharmos sob os dados da API.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/ForecastController.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/ForecastController.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -40,12 +45,14 @@
     "nodejs_interpreter_path": "node",
     "nodejs_package_manager_path": "npm",
     "prettierjs.PrettierConfiguration.Package": "/home/rafael/Desktop/programming/projects/api-metereologia-surf/back-end/node_modules/prettier",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "ts.external.directory.path": "/home/rafael/Desktop/programming/projects/api-metereologia-surf/back-end/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/test" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -92,7 +99,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1658307452720</updated>
-      <workItem from="1658307453844" duration="14899000" />
+      <workItem from="1658307453844" duration="29042000" />
     </task>
     <task id="LOCAL-00001" summary="feat: inserção do .gitignore.">
       <created>1658308421769</created>
@@ -108,7 +115,56 @@
       <option name="project" value="LOCAL" />
       <updated>1658308483262</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: inserção de arquivos de dependências e de configurações.">
+      <created>1658331372679</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1658331372679</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat: adição de teste end-to-end para o &quot;ForecastController&quot;.">
+      <created>1658331393180</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1658331393180</updated>
+    </task>
+    <task id="LOCAL-00005" summary="feat começo do desenvolvimento do &quot;ForecastController&quot;.">
+      <created>1658331406310</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1658331406310</updated>
+    </task>
+    <task id="LOCAL-00006" summary="feat: inserção de arquivo com métodos que controlam a inicialização da aplicação.">
+      <created>1658331463289</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1658331463289</updated>
+    </task>
+    <task id="LOCAL-00007" summary="feat: inserção de arquivo de configuração do mapeamento das bibliotecas do TS.">
+      <created>1658331470397</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1658331470397</updated>
+    </task>
+    <task id="LOCAL-00008" summary="feat: inserindo JSON normalizado que será utilizado como o mock para verificarmos como os dados que vieram da API devem ser tratados.">
+      <created>1658335848464</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1658335848464</updated>
+    </task>
+    <task id="LOCAL-00009" summary="feat: inserindo JSON que será utilizado como mock para trabalharmos sob os dados da API.">
+      <created>1658335866697</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1658335866697</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -128,6 +184,13 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: inserção do .gitignore." />
     <MESSAGE value="feat: alteração do local em que o &quot;.gitignore&quot; está localizado no projeto." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: alteração do local em que o &quot;.gitignore&quot; está localizado no projeto." />
+    <MESSAGE value="feat: inserção de arquivos de dependências e de configurações." />
+    <MESSAGE value="feat: adição de teste end-to-end para o &quot;ForecastController&quot;." />
+    <MESSAGE value="feat começo do desenvolvimento do &quot;ForecastController&quot;." />
+    <MESSAGE value="feat: inserção de arquivo com métodos que controlam a inicialização da aplicação." />
+    <MESSAGE value="feat: inserção de arquivo de configuração do mapeamento das bibliotecas do TS." />
+    <MESSAGE value="feat: inserindo JSON normalizado que será utilizado como o mock para verificarmos como os dados que vieram da API devem ser tratados." />
+    <MESSAGE value="feat: inserindo JSON que será utilizado como mock para trabalharmos sob os dados da API." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: inserindo JSON que será utilizado como mock para trabalharmos sob os dados da API." />
   </component>
 </project>
