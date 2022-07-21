@@ -25,5 +25,35 @@ describe('Storm Glass client', () => {
         const response = await stormGlass.fetchPoints(lat, lng);
 
         expect(response).toEqual(stormGlassNormalized3HoursFixture);
-    })
+    });
+
+    /**
+     * Esse teste verificará o comportamento do método "isValidPoint()"
+     * do client, que deve excluir os pontos caso eles cheguem de forma incompleta
+     * da API externa. Lembrando que ele não fará, realmente, uma requisição para
+     * a API externa, e sim, mockaremos o retorno da requisição para essa API.
+     */
+
+    it('deve excluir os pontos que não estão completos.', async () => {
+        const lat = -33.792726
+        const lng = 151.289824;
+
+        const incompleteResponse = { //Essa resposta possui chaves incompletas, logo, ela deve passar pelo "isValidPoint()" e falhar.
+            hours: [
+                {
+                    windDirection: {
+                        noaa: 300,
+                    },
+                    time: '2020-04-26T00:00:00+00:00',
+                },
+            ],
+        };
+
+        mockedAxios.get.mockResolvedValue({data: incompleteResponse});
+
+        const stormGlass = new StormGlass(mockedAxios);
+        const response = await stormGlass.fetchPoints(lat, lng);
+
+        expect(response).toEqual([]);
+    });
 })
