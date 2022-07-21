@@ -1,6 +1,7 @@
 import {AxiosError, AxiosStatic } from "axios";
 import {InternalError} from "@src/util/errors/internal-error";
 import config, {IConfig} from "config";
+import * as HTTPUtil from '@src/util/request';
 
 /**
  * Os "clients" serão responsáveis por realizar a comunicação com
@@ -82,7 +83,7 @@ export class StormGlass {
 
     readonly stormGlassAPISource = 'noaa'; //O "source" é de onde os dados metereológicos dessa API virão.
 
-    constructor(protected request: AxiosStatic) { //O Axios será utilizado para realizarmos requisições para API externas.
+    constructor(protected request = new HTTPUtil.Request()) { //O Axios será utilizado para realizarmos requisições para API externas.
     }
 
     public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
@@ -97,19 +98,14 @@ export class StormGlass {
 
             return this.normalizeResponse(response.data);
 
-        } catch (err: unknown) { //O TypeScript não permite que um erro seja tipado, assim, podemos receber vários tipos de erros. O máximo que conseguimos fazer é verificar se um erro é de um determinado tipo, e se for, executar uma determinada ação.
-            const axiosError = err as AxiosError;
-            if (
-                axiosError.response &&
-                axiosError.response.status
-            ) {
+        } catch (err) { //O TypeScript não permite que um erro seja tipado, assim, podemos receber vários tipos de erros. O máximo que conseguimos fazer é verificar se um erro é de um determinado tipo, e se for, executar uma determinada ação.
+            if (err instanceof Error && HTTPUtil.Request.isRequestError(err)){
+                const error = HTTPUtil.Request.extractErrorData(err); //Extraindo as informações do erro.
                 throw new StormGlassResponseError(
-                    `Error: ${JSON.stringify(axiosError.response.data)} Code: ${
-                        axiosError.response.status
-                    }`
+                    `Error: ${JSON.stringify(error.data)} Code: ${error.status}`
                 );
             }
-            throw new ClientRequestError((err as { message: any }).message);
+            throw new ClientRequestError(JSON.stringify(err));
         }
     }
 
