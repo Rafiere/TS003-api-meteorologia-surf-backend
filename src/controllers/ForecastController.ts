@@ -1,6 +1,14 @@
 import { Controller, Get } from '@overnightjs/core';
 import { Request, Response } from 'express';
 
+/**
+ * Os controllers são utilizados para receber uma determinada requisição e
+ * delegá-la para algum lugar na aplicação.
+ *
+ * Nessa aplicação, os "clients" serão as unidades responsáveis por conversar com
+ * serviços externos, como a API que estamos utilizando.
+ */
+
 @Controller('forecast')
 export class ForecastController {
   @Get('')
