@@ -75,22 +75,31 @@ export class Forecast {
     public async processForecastForBeaches(beaches: Beach[]): Promise<TimeForecast[]> {
         const pointsWithCorrectSources: BeachForecast[] = []; //Esse será o array de responses finais.
 
-        for(const beach of beaches){ //Pegaremos a informação de cada praia registrada pelo usuário.
-            const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
-            const enrichedBeachData = points.map((e) => ({ //Adicionaremos as outras informações necessárias, além das informações já existentes sobre um determinado ponto, de outro serviço.
-                ...{ //Realizando o merge entre os points normalizados, que foram obtidos do cliente do stormglass e os outros dados, que serão obtidos de outros serviços.
-                    lat: beach.lat,
-                    lng: beach.lng,
-                    name: beach.name,
-                    position: beach.position,
-                    rating: 1 //Ainda não temos a lógica desse serviço implementada.
-                },
-                ... e //Nessa linha estamos juntando todos os cinco parâmetros acima com os dados que são enviados pela API externa do stormglass, que é representado pela letra "e".
-            }));
-            pointsWithCorrectSources.push(...enrichedBeachData); //Adicionaremos na lista de resposta final esse objeto do "for()". Todos os atributos desse objeto ficarão no mesmo nível pois estamos utilizando o "...", que é o spread operator.
-        }
+        try {
+            for(const beach of beaches){ //Pegaremos a informação de cada praia registrada pelo usuário.
+                const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
+                const enrichedBeachData = this.enrichBeachData(points, beach);
+                pointsWithCorrectSources.push(...enrichedBeachData); //Adicionaremos na lista de resposta final esse objeto do "for()". Todos os atributos desse objeto ficarão no mesmo nível pois estamos utilizando o "...", que é o spread operator.
+            }
 
-        return this.mapForecastByTime(pointsWithCorrectSources);
+            return this.mapForecastByTime(pointsWithCorrectSources);
+
+        }catch(error: unknown){
+            throw new ForecastProcessingInternalError((error as Error).message);
+        }
+    }
+
+    private enrichBeachData(points: ForecastPoint[], beach: Beach): BeachForecast[]{
+        return points.map((e) => ({ //Adicionaremos as outras informações necessárias, além das informações já existentes sobre um determinado ponto, de outro serviço.
+            ...{ //Realizando o merge entre os points normalizados, que foram obtidos do cliente do stormglass e os outros dados, que serão obtidos de outros serviços.
+                lat: beach.lat,
+                lng: beach.lng,
+                name: beach.name,
+                position: beach.position,
+                rating: 1 //Ainda não temos a lógica desse serviço implementada.
+            },
+            ... e //Nessa linha estamos juntando todos os cinco parâmetros acima com os dados que são enviados pela API externa do stormglass, que é representado pela letra "e".
+        }));
     }
 
     private mapForecastByTime(forecast: BeachForecast[]): TimeForecast[]{
