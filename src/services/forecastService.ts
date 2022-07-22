@@ -1,4 +1,5 @@
 import {ForecastPoint, StormGlass} from "@src/clients/stormGlass";
+import {InternalError} from "@src/util/errors/internal-error";
 
 /**
  * Esse serviço chamará o cliente "stormGlass", obterá os dados normalizados
@@ -51,6 +52,13 @@ export interface BeachForecast extends Omit<Beach, 'user'>, ForecastPoint { //Co
 export interface TimeForecast {
     time: string;
     forecast: BeachForecast[];
+}
+
+export class ForecastProcessingInternalError extends InternalError {
+
+    constructor(message: string){
+        super(`Unexpected error during the forecast processing: ${message}`);
+    }
 }
 
 export class Forecast {
