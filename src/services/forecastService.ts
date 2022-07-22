@@ -44,6 +44,15 @@ export interface BeachForecast extends Omit<Beach, 'user'>, ForecastPoint { //Co
 
 }
 
+/**
+ * Essa interface representará o "BeachForecast" dividido por horas.
+ */
+
+export interface TimeForecast {
+    time: string;
+    forecast: BeachForecast[];
+}
+
 export class Forecast {
 
     constructor(protected stormGlass = new StormGlass()){}
@@ -55,7 +64,7 @@ export class Forecast {
      * @param beaches
      */
 
-    public async processForecastForBeaches(beaches: Beach[]): Promise<BeachForecast[]> {
+    public async processForecastForBeaches(beaches: Beach[]): Promise<TimeForecast[]> {
         const pointsWithCorrectSources: BeachForecast[] = []; //Esse será o array de responses finais.
 
         for(const beach of beaches){ //Pegaremos a informação de cada praia registrada pelo usuário.
@@ -72,6 +81,24 @@ export class Forecast {
             }));
             pointsWithCorrectSources.push(...enrichedBeachData); //Adicionaremos na lista de resposta final esse objeto do "for()". Todos os atributos desse objeto ficarão no mesmo nível pois estamos utilizando o "...", que é o spread operator.
         }
-        return pointsWithCorrectSources;
+
+        return this.mapForecastByTime(pointsWithCorrectSources);
+    }
+
+    private mapForecastByTime(forecast: BeachForecast[]): TimeForecast[]{
+        const forecastByTime: TimeForecast[] = []; //Esse será o array final.
+
+        for(const point of forecast){
+            const timePoint = forecastByTime.find((f) => f.time === point.time); //Se já existir um objeto, no formato JSON, para aquela hora, apenas adicionaremos mais um ponto nesse objeto. Se não existir, criaremos um novo objeto com essa determinada hora e adicionaremos o ponto necessário.
+            if(timePoint){ //Se essa hora já existir no JSON, apenas adicionaremos um novo ponto nessa hora.
+                timePoint.forecast.push(point);
+            }else { //Se essa hora não existir, criaremos uma determinada hora e adicionaremos o ponto dentro dessa hora. Lembrando que, nesse método, estamos formando o JSON que será devolvido.
+                forecastByTime.push({
+                   time: point.time,
+                   forecast: [point]
+                });
+            }
+        }
+        return forecastByTime;
     }
 }
