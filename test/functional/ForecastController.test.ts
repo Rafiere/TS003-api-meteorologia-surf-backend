@@ -1,6 +1,9 @@
 /**
  * Basicamente, um teste consiste em acessarmos uma determinada URL e a
  * resposta dessa URL estar de acordo com a resposta esperada.
+ *
+ * Ele contém o JSON final, que é esperado para ser devolvido pelo usuário, por isso
+ * que ele é um teste end-to-end.
  */
 
 describe('Beach forecast functional tests', () => {
