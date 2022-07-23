@@ -1,4 +1,5 @@
 import mongoose, {Document, Model} from "mongoose";
+import AuthService from "@src/services/authService";
 
 export interface User {
 
@@ -37,10 +38,27 @@ const schema = new mongoose.Schema(
     }
 );
 
+/**
+ * Esse método fará uma busca no banco de dados para verificar se o email que está
+ * sendo recebido como argumento já está cadastrado no banco de dados.
+ */
+
 schema.path('email').validate(async (email: string) => { //Criando uma validação customizada para verificar se o email já existe no banco de dados.
    const emailCount = await mongoose.models.User.countDocuments({email});
    return !emailCount; //Se tiver mais do que zero emails já cadastrados no banco, será retornado que esse email já existe no banco de dados.
 }, 'já existe no banco de dados!', CUSTOM_VALIDATION.DUPLICATED); //Criamos um tipo personalizado para esse erro e estamos utilizando esse tipo personalizado.
+
+schema.pre<UserModel>('save', async function(): Promise<void>{ //Estamos utilizando o "function" ao invés do "()" para utilizarmos o "this" no contexto de dentro da função, e não no contexto do módulo inteiro.
+   if(!this.password || !this.isModified('password')){ //Se o password está definido e ele realmente foi alterado, ou seja, foi encriptado, nenhuma ação será realizada.
+       return;
+   }
+
+   try {
+       this.password = await AuthService.hashPassword(this.password);
+   }catch(err){
+       console.error(`Error hashing the password for the user ${this.name}`);
+   }
+});
 
 export const User: Model<UserModel> = mongoose.model<UserModel>('User', schema);
 
