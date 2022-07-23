@@ -22,11 +22,37 @@ describe('Testes de integração dos usuários da aplicação.', () => {
             expect(response.body).toEqual(expect.objectContaining(newUser)); //O "objectContaining()" serve para não precisarmos realizar o match do ID, pois ele será variável.
         });
 
-        it('deve lançar um erro com código 400 quando existir um erro de validação.', async () => {
-           const newUser = {
-               email: 'john@mail.com',
-               password: '1234',
-           };
+        it('deve lançar um erro com código 422 quando existir um erro de validação.', async () => {
+            const newUser = {
+                email: 'john@mail.com',
+                password: '1234',
+            };
+
+            const response = await global.testRequest.post('/users').send(newUser);
+
+            expect(response.status).toBe(422);
+            expect(response.body).toEqual({
+                code: 422,
+                error: 'User validation failed: name: Path `name` is required.',
+            });
+        });
+
+        it('deve retornar o status 409 quando o email do usuário já existir', async () => {
+
+            const newUser = {
+                name: 'John Doe',
+                email: 'john@mail.com',
+                password: '1234'
+            };
+
+            await global.testRequest.post('/users').send(newUser);
+            const response = await global.testRequest.post('/users').send(newUser);
+
+            expect(response.status).toBe(409);
+            expect(response.body).toEqual({
+                code: 409,
+                error: 'User validation failed: email: já existe no banco de dados!'
+            });
         });
     });
 });
