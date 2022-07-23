@@ -8,6 +8,10 @@ export interface User {
     password: string;
 }
 
+export enum CUSTOM_VALIDATION {
+    DUPLICATED = 'DUPLICATED'
+}
+
 interface UserModel extends Omit<User, '_id'>, Document { //Estamos reaproveitando os atributos da interface "User", exceto o atributo "id".
 
 }
@@ -32,6 +36,11 @@ const schema = new mongoose.Schema(
         }
     }
 );
+
+schema.path('email').validate(async (email: string) => { //Criando uma validação customizada para verificar se o email já existe no banco de dados.
+   const emailCount = await mongoose.models.User.countDocuments({email});
+   return !emailCount; //Se tiver mais do que zero emails já cadastrados no banco, será retornado que esse email já existe no banco de dados.
+}, 'já existe no banco de dados!', CUSTOM_VALIDATION.DUPLICATED); //Criamos um tipo personalizado para esse erro e estamos utilizando esse tipo personalizado.
 
 export const User: Model<UserModel> = mongoose.model<UserModel>('User', schema);
 
