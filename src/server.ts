@@ -45,4 +45,10 @@ export class SetupServer extends Server {
     //Esse método retorna uma instância da aplicação do Express.
     return this.app;
   }
+
+  public start(): void {
+    this.app.listen(this.port, () => {
+      console.info('Server listening on port: ', this.port);
+    })
+  }
 }
