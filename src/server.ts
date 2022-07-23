@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import { ForecastController } from '@src/controllers/ForecastController';
 import { Application } from 'express'; //Importando os apelidos dos imports para a aplicação. Esses apelidos precisam ser o primeiro import desse arquivo.
 import * as database from '@src/database';
+import {BeachesController} from "@src/controllers/beachesController";
 
 export class SetupServer extends Server {
   constructor(private port = 3000) {
@@ -19,7 +20,7 @@ export class SetupServer extends Server {
     //Esse método inicializará a aplicação.
     this.setupExpress();
     this.setupControllers();
-    await this.databaseSetup();
+    await this.databaseSetup(); //Inicializando o banco de dados.
   }
 
   private setupExpress(): void {
@@ -28,7 +29,8 @@ export class SetupServer extends Server {
 
   private setupControllers(): void {
     const forecastController = new ForecastController();
-    this.addControllers([forecastController]);
+    const beachesController = new BeachesController()
+    this.addControllers([forecastController, beachesController]);
   }
 
   private async databaseSetup(): Promise<void> { //Esse método será responsável por inicializar a conexão com o banco de dados.
