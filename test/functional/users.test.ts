@@ -1,4 +1,5 @@
 import {User} from "@src/models/user";
+import AuthService from "@src/services/authService";
 
 describe('Testes de integração dos usuários da aplicação.', () => {
 
@@ -8,7 +9,7 @@ describe('Testes de integração dos usuários da aplicação.', () => {
 
     describe('Quando criar um novo usuário', () => {
 
-        it('Deve criar um novo usuário corretamente', async () => {
+        it('Deve criar um novo usuário corretamente com a senha encriptada.', async () => {
 
             const newUser = {
                 name: 'John Doe',
@@ -18,8 +19,12 @@ describe('Testes de integração dos usuários da aplicação.', () => {
 
             const response = await global.testRequest.post('/users').send(newUser); //Estamos enviando um usuário pelo "body" dessa requisição do tipo "post" e armazenando o retorno dessa requisição na constante "response".
 
+            await expect(AuthService.comparePasswords(newUser.password, response.body.password)).resolves.toBeTruthy(); //Estamos passando a senha antes e a senha depois da encriptação. Se o método que compara os dois hashes retornar "true", isso significa que o método funcionou corretamente.
             expect(response.status).toBe(201);
-            expect(response.body).toEqual(expect.objectContaining(newUser)); //O "objectContaining()" serve para não precisarmos realizar o match do ID, pois ele será variável.
+            expect(response.body).toEqual(expect.objectContaining({
+                ... newUser,
+                ... {password: expect.any(String)}} //O "password" precisa ser qualquer String, assim, não precisaremos gerar um hash igual ao que foi gerado pelo BCrypt para encriptar a senha. Isso está sendo feito pois, logo acima, já verificamos se as senhas são iguais.
+            )); //O "objectContaining()" serve para não precisarmos realizar o match do ID, pois ele será variável.
         });
 
         it('deve lançar um erro com código 422 quando existir um erro de validação.', async () => {
