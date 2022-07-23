@@ -1,5 +1,6 @@
 import {ForecastPoint, StormGlass} from "@src/clients/stormGlass";
 import {InternalError} from "@src/util/errors/internal-error";
+import {Beach} from "@src/models/beach";
 
 /**
  * Esse serviço chamará o cliente "stormGlass", obterá os dados normalizados
@@ -11,29 +12,6 @@ import {InternalError} from "@src/util/errors/internal-error";
  * será devolvido para o controller, e, consequentemente, que o controller retornará
  * para o usuário.
  */
-
-/**
- * Esse enum representará os pontos cardeais que a aplicação suportará.
- */
-
-export enum BeachPosition {
-    S = 'S',
-    E = 'E',
-    W = 'W',
-    N = 'N'
-}
-
-/**
- * Essa interface representará uma praia que estará cadastrada no sistema.
- */
-
-export interface Beach {
-    name: string;
-    position: BeachPosition;
-    lat: number;
-    lng: number;
-    user: string;
-}
 
 /**
  * Esse tipo representará a previsão do tempo final, com a informação
