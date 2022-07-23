@@ -9,8 +9,10 @@ import { ForecastController } from '@src/controllers/ForecastController';
 import { Application } from 'express'; //Importando os apelidos dos imports para a aplicação. Esses apelidos precisam ser o primeiro import desse arquivo.
 import * as database from '@src/database';
 import {BeachesController} from "@src/controllers/beachesController";
+import {UsersController} from "@src/controllers/usersController";
 
 export class SetupServer extends Server {
+
   constructor(private port = 3000) {
     //A porta da nossa aplicação será a "3000".
     super();
@@ -29,8 +31,15 @@ export class SetupServer extends Server {
 
   private setupControllers(): void {
     const forecastController = new ForecastController();
-    const beachesController = new BeachesController()
-    this.addControllers([forecastController, beachesController]);
+    const beachesController = new BeachesController();
+    const usersController = new UsersController();
+    this.addControllers(
+        [
+          forecastController,
+          beachesController,
+          usersController
+        ]
+    );
   }
 
   private async databaseSetup(): Promise<void> { //Esse método será responsável por inicializar a conexão com o banco de dados.
@@ -48,7 +57,7 @@ export class SetupServer extends Server {
 
   public start(): void {
     this.app.listen(this.port, () => {
-      console.info('Server listening on port: ', this.port);
-    })
+      console.info('Server listening on port: ' + this.port);
+    });
   }
 }
