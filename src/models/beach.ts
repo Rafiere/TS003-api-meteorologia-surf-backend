@@ -29,20 +29,21 @@ import mongoose, { Document, Model } from 'mongoose';
 
 const schema = new mongoose.Schema(
     {
-        lat: {type: Number, required: true},
-        lng: {type: Number, required: true},
-        name: {type: String, required: true},
-        position: {type: String, required: true},
+        lat: { type: Number, required: true },
+        lng: { type: Number, required: true },
+        name: { type: String, required: true },
+        position: { type: String, required: true },
     },
     {
-        toJSON: { //Esse método é padrão do Mongoose. Ele serve para, quando buscarmos uma praia do banco de dados e transformá-lo em JSON, que o JSON será transformado da seguinte forma:
+        toJSON: {
             transform: (_, ret): void => {
                 ret.id = ret._id;
-                delete ret._id; //Removeremos, da transformação final, os dois campos abaixo, porém, eles não serão removidos do banco de dados, apenas serão removidos quando convertermos os dados do banco no formato JSON.
+                delete ret._id;
                 delete ret.__v;
-            }
-        }
-    })
+            },
+        },
+    }
+);
 
 /**
  *
