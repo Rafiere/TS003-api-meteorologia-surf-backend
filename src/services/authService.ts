@@ -1,3 +1,7 @@
+import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
+import config from 'config';
+
 /**
  * Esse módulo conterá os métodos necessários para a realização de tarefas
  * relacionadas à autenticação do usuário.
@@ -9,8 +13,6 @@
  * biblioteca do BCrypt. Os testes end-to-end farão a cobertura desses métodos de
  * encriptação.
  */
-
-import bcrypt from "bcrypt";
 
 export default class AuthService {
     /**
@@ -30,6 +32,17 @@ export default class AuthService {
     public static async comparePasswords(originalPassword: string, hashedPassword: string): Promise<boolean> {
 
         return await bcrypt.compare(originalPassword, hashedPassword);
+    }
+
+
+    /**
+     * Esse método será responsável por gerar o token JWT.
+     */
+    public static generateToken(payload: object): string{
+
+        return jwt.sign(payload, config.get('App.auth.key'), { //Estamos gerando e retornando o token JWT.
+            expiresIn: config.get('App.auth.tokenExpiresIn'),
+        });
     }
 }
 
