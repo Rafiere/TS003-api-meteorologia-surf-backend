@@ -60,4 +60,51 @@ describe('Testes de integração dos usuários da aplicação.', () => {
             });
         });
     });
+
+    describe('Quando autenticar um usuário', () => {
+        it('Deve gerar um token para um usuário válido.', async() => {
+
+            const newUser = {
+                name: 'John Doe',
+                email: 'john@mail.com',
+                password: '1234'
+            };
+
+            await new User(newUser).save();
+
+            const response = await global.testRequest
+                .post('/users/authenticate')
+                .send({email: newUser.email, password: newUser.password});
+
+            expect(response.body).toEqual(
+                expect.objectContaining({token: expect.any(String)})
+            );
+        });
+
+        it('Deve retornar \"UNAUTHORIZED\" se nenhum usuário for encontrado com um determinado email.', async() => {
+
+            const response = await global.testRequest
+                .post('/users/authenticate')
+                .send({email: 'some-email@mail.com', password: '1234'});
+
+            expect(response.status).toBe(401);
+        });
+
+        it('Deve retornar \"UNAUTHORIZED\" se o usuário for encontrado mas a senha inserida não dar o match com a senha do banco de dados.', async() => {
+
+            const newUser = {
+                name: 'John Doe',
+                email: 'john@mail.com',
+                password: '1234'
+            };
+
+            await new User(newUser).save();
+
+            const response = await global.testRequest
+                .post('/users/authenticate')
+                .send({email: newUser.email, password: 'different password'});
+
+            expect(response.status).toBe(401);
+        });
+    });
 });
