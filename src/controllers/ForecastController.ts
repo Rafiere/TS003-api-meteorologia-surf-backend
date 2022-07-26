@@ -1,7 +1,8 @@
-import { Controller, Get } from '@overnightjs/core';
+import {ClassMiddleware, Controller, Get} from '@overnightjs/core';
 import { Request, Response } from 'express';
 import {Forecast} from "@src/services/forecastService";
 import {Beach} from "@src/models/beach";
+import {authMiddleware} from "@src/middlewares/auth";
 
 /**
  * Os controllers são utilizados para receber uma determinada requisição e
@@ -14,13 +15,14 @@ import {Beach} from "@src/models/beach";
 const forecast = new Forecast();
 
 @Controller('forecast')
+@ClassMiddleware(authMiddleware) //Esse middleware garantirá que o usuário que fez a requisição esteja inserido dentro da requisição.
 export class ForecastController {
   @Get('')
-  public async getForecastForgeLoggedUser(_: Request, res: Response): Promise<void> {
+  public async getForecastForgeLoggedUser(req: Request, res: Response): Promise<void> {
 
     try {
 
-      const beaches = await Beach.find({});
+      const beaches = await Beach.find({user: req.decoded?.id});
       const forecastData = await forecast.processForecastForBeaches(beaches);
 
       res.status(200).send(forecastData);
