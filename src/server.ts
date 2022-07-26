@@ -10,6 +10,7 @@ import { Application } from 'express'; //Importando os apelidos dos imports para
 import * as database from '@src/database';
 import {BeachesController} from "@src/controllers/beachesController";
 import {UsersController} from "@src/controllers/usersController";
+import logger from "@src/logger";
 
 export class SetupServer extends Server {
 
@@ -57,7 +58,7 @@ export class SetupServer extends Server {
 
   public start(): void {
     this.app.listen(this.port, () => {
-      console.info('Server listening on port: ' + this.port);
+      logger.info('Server listening on port: ' + this.port); //Estamos utilizando o Pino para gerar os logs.
     });
   }
 }
