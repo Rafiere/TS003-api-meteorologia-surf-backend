@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import config from 'config';
+import {User} from "@src/models/user";
 
 /**
  * Esse módulo conterá os métodos necessários para a realização de tarefas
@@ -13,6 +14,15 @@ import config from 'config';
  * biblioteca do BCrypt. Os testes end-to-end farão a cobertura desses métodos de
  * encriptação.
  */
+
+/**
+ * Essa interface representará o usuário que será decodado, ou seja, que
+ * será extraído do Token JWT.
+ */
+
+export interface DecodedUser extends Omit<User, '_id'> {
+    id: string;
+}
 
 export default class AuthService {
     /**
@@ -43,6 +53,10 @@ export default class AuthService {
         return jwt.sign(payload, config.get('App.auth.key'), { //Estamos gerando e retornando o token JWT.
             expiresIn: config.get('App.auth.tokenExpiresIn'),
         });
+    }
+
+    public static decodeToken(token: string): DecodedUser {
+        return jwt.verify(token, config.get('App.auth.key')) as DecodedUser //Estamos forçando o casting de "string" para "DecodedUser".
     }
 }
 
