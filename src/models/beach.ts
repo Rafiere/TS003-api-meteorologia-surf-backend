@@ -2,6 +2,8 @@
  *
  */
 
+import {Schema} from "mongoose";
+
 /**
  * Essa interface representará uma praia que estará cadastrada no sistema.
  */
@@ -12,6 +14,7 @@ export interface Beach {
     position: BeachPosition;
     lat: number;
     lng: number;
+    user: string;
 }
 
 /**
@@ -33,6 +36,7 @@ const schema = new mongoose.Schema(
         lng: { type: Number, required: true },
         name: { type: String, required: true },
         position: { type: String, required: true },
+        user: {type: Schema.Types.ObjectId, ref: 'User', required: true} //Esse campo vai ser do tipo "Id", que é o tipo gerado pelo Mongoose. Ele referenciará o model de "User". Quando criamos uma praia, ela sempre pertencerá a um usuário, ou seja, ela sempre deverá estar conectada com um usuário.
     },
     {
         toJSON: {
