@@ -1,6 +1,7 @@
 import {ForecastPoint, StormGlass} from "@src/clients/stormGlass";
 import {InternalError} from "@src/util/errors/internal-error";
 import {Beach} from "@src/models/beach";
+import logger from "@src/logger";
 
 /**
  * Esse serviço chamará o cliente "stormGlass", obterá os dados normalizados
@@ -58,11 +59,13 @@ export class Forecast {
                 const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
                 const enrichedBeachData = this.enrichBeachData(points, beach);
                 pointsWithCorrectSources.push(...enrichedBeachData); //Adicionaremos na lista de resposta final esse objeto do "for()". Todos os atributos desse objeto ficarão no mesmo nível pois estamos utilizando o "...", que é o spread operator.
+                logger.info(`Preparing the forecast for ${beaches.length} beaches.`);
             }
 
             return this.mapForecastByTime(pointsWithCorrectSources);
 
         }catch(error: unknown){
+            logger.error(error);
             throw new ForecastProcessingInternalError((error as Error).message);
         }
     }
