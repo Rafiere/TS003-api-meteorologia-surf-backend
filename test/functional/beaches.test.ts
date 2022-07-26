@@ -1,8 +1,26 @@
 import {Beach} from "@src/models/beach";
+import {User} from "@src/models/user";
+import AuthService from "@src/services/authService";
 
 describe('Testes funcionais para as \'Beaches\' da aplicação.', () => {
 
+    const defaultUser = {
+        name: 'John Doe',
+        email: 'John2@mail.com',
+        password: '1234',
+    }
+
+    let token: string;
+
     beforeAll(async () => await Beach.deleteMany({})); //Antes de todos os testes começarem, todas as praias do banco de dados serão deletadas. Isso garantirá que o estado do teste estará limpo quando ele for executado.
+
+    beforeEach(async() => {
+        await Beach.deleteMany({});
+        await User.deleteMany({});
+        const user = await new User(defaultUser).save();
+
+        token = AuthService.generateToken(user.toJSON()); //Estamos gerando um token para o usuário e definindo que esse token será utilizado em todas as requisições.
+    })
 
     describe('Quando criarmos uma praia: ', () => { //Criamos dois "describes" para melhorar a legibilidade dos testes.
 
@@ -20,7 +38,7 @@ describe('Testes funcionais para as \'Beaches\' da aplicação.', () => {
                 position: 'E'
             };
 
-            const response = await global.testRequest.post('/beaches').send(newBeach);
+            const response = await global.testRequest.post('/beaches').set({'x-access-token': token}).send(newBeach);
             expect(response.status).toBe(201);
             expect(response.body).toEqual(expect.objectContaining(newBeach)); //Como será enviado o "ID" junto com o objeto "newBeach" para o controller, e esse ID será diferente a cada instante, ao invés de compararmos todos os atributos desse objeto para o teste passar, vamos passar a verificar apenas se o objeto que será retornado pelo controller terá os atributos do objeto "newBeach". Se ele tiver qualquer atributo a mais, como um ID, o teste passará da mesma forma.
 
@@ -35,7 +53,7 @@ describe('Testes funcionais para as \'Beaches\' da aplicação.', () => {
                 position: 'E'
             };
 
-            const response = await global.testRequest.post('/beaches').send(newBeach);
+            const response = await global.testRequest.post('/beaches').set({'x-access-token': token}).send(newBeach);
 
             expect(response.status).toBe(422);
             expect(response.body).toEqual({ //Estamos esperando que esse erro, que é o padrão do Mongoose, seja lançado.
