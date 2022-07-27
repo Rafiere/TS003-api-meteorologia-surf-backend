@@ -2,6 +2,7 @@ import {ForecastPoint, StormGlass} from "@src/clients/stormGlass";
 import {InternalError} from "@src/util/errors/internal-error";
 import {Beach} from "@src/models/beach";
 import logger from "@src/logger";
+import {RatingService} from "@src/services/ratingService";
 
 /**
  * Esse serviço chamará o cliente "stormGlass", obterá os dados normalizados
@@ -42,13 +43,13 @@ export class ForecastProcessingInternalError extends InternalError {
 
 export class Forecast {
 
-    constructor(protected stormGlass = new StormGlass()){}
+    constructor(protected stormGlass = new StormGlass(),
+                protected RatingServ: typeof RatingService = RatingService){} //Não podemos colocar apenas ":Rating", pois ele não vai ser uma instância de "Rating", e sim uma classe.
 
     /**
      * Esse método receberá uma lista de praias e fará a junção entre
      * a previsão para essas praias, a informação sobre essas praias e o rating
      * dessas praias em um determinado momento.
-     * @param beaches
      */
 
     public async processForecastForBeaches(beaches: Beach[]): Promise<TimeForecast[]> {
@@ -56,8 +57,9 @@ export class Forecast {
 
         try {
             for(const beach of beaches){ //Pegaremos a informação de cada praia registrada pelo usuário.
+                const rating = new this.RatingServ(beach);
                 const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
-                const enrichedBeachData = this.enrichBeachData(points, beach);
+                const enrichedBeachData = this.enrichBeachData(points, beach, rating);
                 pointsWithCorrectSources.push(...enrichedBeachData); //Adicionaremos na lista de resposta final esse objeto do "for()". Todos os atributos desse objeto ficarão no mesmo nível pois estamos utilizando o "...", que é o spread operator.
                 logger.info(`Preparing the forecast for ${beaches.length} beaches.`);
             }
@@ -70,16 +72,16 @@ export class Forecast {
         }
     }
 
-    private enrichBeachData(points: ForecastPoint[], beach: Beach): BeachForecast[]{
-        return points.map((e) => ({ //Adicionaremos as outras informações necessárias, além das informações já existentes sobre um determinado ponto, de outro serviço.
+    private enrichBeachData(points: ForecastPoint[], beach: Beach, rating: RatingService): BeachForecast[]{
+        return points.map((point) => ({ //Adicionaremos as outras informações necessárias, além das informações já existentes sobre um determinado ponto, de outro serviço.
             ...{ //Realizando o merge entre os points normalizados, que foram obtidos do cliente do stormglass e os outros dados, que serão obtidos de outros serviços.
                 lat: beach.lat,
                 lng: beach.lng,
                 name: beach.name,
                 position: beach.position,
-                rating: 1 //Ainda não temos a lógica desse serviço implementada.
+                rating: rating.getRateForPoint(point)
             },
-            ... e //Nessa linha estamos juntando todos os cinco parâmetros acima com os dados que são enviados pela API externa do stormglass, que é representado pela letra "e".
+            ... point //Nessa linha estamos juntando todos os cinco parâmetros acima com os dados que são enviados pela API externa do stormglass, que é representado pela letra "e".
         }));
     }
 
