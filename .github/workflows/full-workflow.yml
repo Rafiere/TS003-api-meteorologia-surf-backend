@@ -37,3 +37,11 @@ jobs:
 
       - name: Run All Tests
         run: yarn test
+
+      - name: Deploy Application on Heroku
+        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "app-curso-surf"
+          heroku_app_email: ${{ secrets.HEROKU_EMAIL }}
