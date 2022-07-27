@@ -1,3 +1,4 @@
+import _ from 'lodash'; //É um padrão utilizarmos o "_" para o lodash.
 import {ForecastPoint, StormGlass} from "@src/clients/stormGlass";
 import {InternalError} from "@src/util/errors/internal-error";
 import {Beach} from "@src/models/beach";
@@ -53,18 +54,11 @@ export class Forecast {
      */
 
     public async processForecastForBeaches(beaches: Beach[]): Promise<TimeForecast[]> {
-        const pointsWithCorrectSources: BeachForecast[] = []; //Esse será o array de responses finais.
 
         try {
-            for(const beach of beaches){ //Pegaremos a informação de cada praia registrada pelo usuário.
-                const rating = new this.RatingServ(beach);
-                const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
-                const enrichedBeachData = this.enrichBeachData(points, beach, rating);
-                pointsWithCorrectSources.push(...enrichedBeachData); //Adicionaremos na lista de resposta final esse objeto do "for()". Todos os atributos desse objeto ficarão no mesmo nível pois estamos utilizando o "...", que é o spread operator.
-                logger.info(`Preparing the forecast for ${beaches.length} beaches.`);
-            }
+            const beachForecast = await this.calculateRating(beaches);
 
-            return this.mapForecastByTime(pointsWithCorrectSources);
+            const timeForecast = this.mapForecastByTime(beachForecast);
 
         }catch(error: unknown){
             logger.error(error);
@@ -83,6 +77,19 @@ export class Forecast {
             },
             ... point //Nessa linha estamos juntando todos os cinco parâmetros acima com os dados que são enviados pela API externa do stormglass, que é representado pela letra "e".
         }));
+    }
+
+    private async calculateRating(beaches: Beach[]): Promise<BeachForecast[]> {
+        const pointsWithCorrectSources: BeachForecast[] = []; //Esse será o array de responses finais.
+        logger.info(`Preparing the forecast for ${beaches.length} beaches.`);
+
+        for(const beach of beaches){ //Pegaremos a informação de cada praia registrada pelo usuário.
+            const rating = new this.RatingServ(beach);
+            const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
+            const enrichedBeachData = this.enrichBeachData(points, beach, rating);
+            pointsWithCorrectSources.push(...enrichedBeachData); //Adicionaremos na lista de resposta final esse objeto do "for()". Todos os atributos desse objeto ficarão no mesmo nível pois estamos utilizando o "...", que é o spread operator.
+        }
+        return pointsWithCorrectSources;
     }
 
     private mapForecastByTime(forecast: BeachForecast[]): TimeForecast[]{
