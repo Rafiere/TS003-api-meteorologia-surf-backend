@@ -43,4 +43,4 @@ jobs:
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "app-curso-surf"
-          heroku_app_email: ${{ secrets.HEROKU_APP_EMAIL }}
+          heroku_email: ${{ secrets.HEROKU_APP_EMAIL }}
