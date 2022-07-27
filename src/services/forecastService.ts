@@ -65,7 +65,6 @@ export class Forecast {
                 forecast: _.orderBy(t.forecast, ['rating'], ['desc']) //Vamos pegar todos os forecasts de um horário e vamos ordenar os horários por rating na ordem decrescente.
             }))
         }catch(error: unknown){
-            logger.error(error);
             throw new ForecastProcessingInternalError((error as Error).message);
         }
     }
