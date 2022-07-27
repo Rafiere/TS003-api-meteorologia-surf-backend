@@ -6,7 +6,7 @@
  * que ele é um teste end-to-end.
  */
 
-import {Beach, BeachPosition} from "@src/models/beach";
+import {Beach, GeoPosition} from "@src/models/beach";
 import nock from 'nock';
 import api_forecast_response_1_beach from "@test/fixtures/api_forecast_response_1_beach.json"
 import stormglass_weather_3_hours from "@test/fixtures/stormglass_weather_3_hours.json"
@@ -33,7 +33,7 @@ describe('Beach forecast functional tests', () => {
             lat: -33.792726,
             lng: 151.289824,
             name: 'Manly',
-            position: BeachPosition.E,
+            position: GeoPosition.E,
             user: user.id
         };
 

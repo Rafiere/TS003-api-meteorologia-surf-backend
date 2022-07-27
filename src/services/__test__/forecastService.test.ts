@@ -1,7 +1,7 @@
 import {StormGlass} from '@src/clients/stormGlass';
 import stormGlassNormalizedResponseFixture from '@test/fixtures/stormglass_normalized_response_3_hours.json';
 import {Forecast} from "@src/services/forecastService";
-import {Beach, BeachPosition} from "@src/models/beach";
+import {Beach, GeoPosition} from "@src/models/beach";
 
 jest.mock('@src/clients/stormGlass'); //Estaremos mockando o cliente, ou seja, mockaremos o resultado do retorno dos métodos do cliente, que são os dados normalizados.
 
@@ -22,7 +22,7 @@ describe('Forecast Service', () =>{
                 lat: -33.792726,
                 lng: 151.289824,
                 name: 'Manly',
-                position: BeachPosition.E,
+                position: GeoPosition.E,
                 user: 'fake-id'
             },
         ];
@@ -109,7 +109,7 @@ describe('Forecast Service', () =>{
                 lat: -33.792726,
                 lng: 151.289824,
                 name: 'Manly',
-                position: BeachPosition.E,
+                position: GeoPosition.E,
                 user: 'fake-id'
             },
         ];
