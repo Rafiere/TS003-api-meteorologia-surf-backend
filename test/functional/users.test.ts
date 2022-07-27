@@ -109,4 +109,42 @@ describe('Testes de integração dos usuários da aplicação.', () => {
             expect(response.status).toBe(401);
         });
     });
+
+    describe('Quando conseguir as informações do usuário', () => {
+        it('Deve retornar as informações do perfil do usuário.', async () => {
+            const newUser = {
+                name: 'John Doe',
+                email: 'john@mail.com',
+                password: '1234'
+            };
+
+            const user = await new User(newUser).save();
+            const token = AuthService.generateToken(user.toJSON());
+            const { body, status } = await global.testRequest
+                .get('/users/me')
+                .set({ 'x-access-token': token});
+
+            expect(status).toBe(200);
+            expect(body).toMatchObject(JSON.parse(JSON.stringify({user})));
+        });
+
+        it('deve retornar \"Not Found\" quando o usuário não for encontrado.', async () => {
+           const newUser = {
+               name: 'John Doe',
+               email: 'john@mail.com',
+               password: '1234',
+           };
+
+           //Estamos criando um novo usuário mas não estamos o salvando, assim, ele não será encontrado.
+
+            const user = new User(newUser);
+            const token = AuthService.generateToken(user.toJSON());
+            const { body, status } = await global.testRequest
+                .get('/users/me')
+                .set({ 'x-access-token': token});
+
+            expect(status).toBe(404);
+            expect(body.message).toBe('User not found!');
+        });
+    });
 });
