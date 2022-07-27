@@ -2,6 +2,7 @@ import {AxiosError, AxiosStatic } from "axios";
 import {InternalError} from "@src/util/errors/internal-error";
 import config, {IConfig} from "config";
 import * as HTTPUtil from '@src/util/request';
+import {TimeUtil} from "@src/util/time";
 
 /**
  * Os "clients" serão responsáveis por realizar a comunicação com
@@ -87,9 +88,10 @@ export class StormGlass {
     }
 
     public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
+        const endTimestamp = TimeUtil.getUnixTimeForAFutureDay(1);
         try {
             const response = await this.request.get<StormGlassForecastResponse>(
-                `${stormGlassResourceConfig.get('apiUrl')}/weather/point?lat=${lat}&lng=${lng}&params=${this.stormGlassAPIParameters}&source=${this.stormGlassAPISource}`,
+                `${stormGlassResourceConfig.get('apiUrl')}/weather/point?lat=${lat}&lng=${lng}&params=${this.stormGlassAPIParameters}&source=${this.stormGlassAPISource}&end=${endTimestamp}`,
                 {
                     headers: {
                         Authorization: stormGlassResourceConfig.get('apiToken'), //O Token de autorização será obtido através de arquivos externos.
