@@ -1,6 +1,13 @@
 name: Complete Workflow
 
-on: ['push']
+on:
+  push:
+    branches:
+      - master
+    pull_request:
+      branches:
+        - main
+        - master
 
 jobs:
   build:
@@ -9,11 +16,10 @@ jobs:
     strategy:
       matrix:
         node-version: [12.x]
-        mongodb-version: [4.2]
+        mongodb-version: [3.6]
 
-    steps:
+  steps:
     - uses: actions/checkout@v2
-    - run: git fetch --prune --unshallow
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -25,8 +31,8 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
 
-    - name: Install dependencies
+    - name: Install Dependencies
       run: yarn --frozen-lockfile
 
-    - name: Run all tests
+    - name: Run All Tests
       run: yarn test
