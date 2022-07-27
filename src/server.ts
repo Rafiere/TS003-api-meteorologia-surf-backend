@@ -11,6 +11,8 @@ import * as database from '@src/database';
 import {BeachesController} from "@src/controllers/beachesController";
 import {UsersController} from "@src/controllers/usersController";
 import logger from "@src/logger";
+import expressPino from 'express-pino-logger';
+import cors from 'cors';
 
 export class SetupServer extends Server {
 
@@ -28,6 +30,12 @@ export class SetupServer extends Server {
 
   private setupExpress(): void {
     this.app.use(bodyParser.json()); //Estamos permitindo que a nossa aplicação transacione dados via JSON.
+    this.app.use(expressPino({
+      logger, //O "expressPino" é uma função que recebe uma instância do logger.
+    }));
+    this.app.use(cors({
+      origin: '*'
+    })) //O front-end, que está em um domínio X não consegue falar com uma página que está em um domínio Y, assim, temos que permitir que a nossa página fale com uma app que está em outro domínio.
   }
 
   private setupControllers(): void {
