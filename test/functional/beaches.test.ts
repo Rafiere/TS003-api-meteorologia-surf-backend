@@ -57,8 +57,9 @@ describe('Testes funcionais para as \'Beaches\' da aplicação.', () => {
 
             expect(response.status).toBe(422);
             expect(response.body).toEqual({ //Estamos esperando que esse erro, que é o padrão do Mongoose, seja lançado.
-                error:
-                    'Beach validation failed: lat: Cast to Number failed for value "invalid_string" (type string) at path "lat"',
+                code: 422,
+                error: 'Unprocessable Entity',
+                message: 'Beach validation failed: lat: Cast to Number failed for value "invalid_string" (type string) at path "lat"',
             });
         });
     });
