@@ -11,7 +11,7 @@ import {Schema} from "mongoose";
 export interface Beach {
     _id?: string; //Às vezes teremos um ID e as vezes não teremos, por isso que esse campo é optional.
     name: string;
-    position: BeachPosition;
+    position: GeoPosition;
     lat: number;
     lng: number;
     user: string;
@@ -21,7 +21,7 @@ export interface Beach {
  * Esse enum representará os pontos cardeais que a aplicação suportará.
  */
 
-export enum BeachPosition {
+export enum GeoPosition {
     S = 'S',
     E = 'E',
     W = 'W',
